@@ -2,9 +2,11 @@
 
 namespace Downloader;
 
+use ArrayIterator;
 use InvalidArgumentException;
+use Iterator;
 
-class Task
+final class Task
 {
     private $batchSize;
     private $maxRetries;
@@ -43,9 +45,14 @@ class Task
         return $this->timeToLive;
     }
 
-    public function items()
+    public function items(): Iterator
     {
-        return $this->items;
+        return new ArrayIterator($this->items);
+    }
+
+    public function itemCount(): int
+    {
+        return count($this->items);
     }
 
     public function throttle(): int

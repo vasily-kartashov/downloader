@@ -8,7 +8,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class Downloader implements LoggerAwareInterface
+final class Downloader implements LoggerAwareInterface
 {
     private $cache;
     private $logger;
@@ -34,86 +34,91 @@ class Downloader implements LoggerAwareInterface
         $multiHandle = curl_multi_init();
         $startTime = microtime(true);
 
-        $batches = [];
-        $batch = [];
+        $attempts = [];
+        $queue = [];
+        $urls = [];
         foreach ($task->items() as $id => $url) {
+            $attempts[$id] = 0;
+            $queue[] = $id;
+            $urls[$id] = $url;
+        }
+
+        while (!empty($queue)) {
+            $id = array_pop($queue);
+
             if ($task->cache()) {
                 $cacheKey = $task->cacheKeyPrefix() . $id;
                 $item = $this->cache->getItem($cacheKey);
                 if ($item->isHit()) {
-                    $content = $item->get();
-                    if ($content !== null) {
-                        $results[$id] = $this->result($content, true, false, false);
+                    $response = $item->get();
+                    if ($response !== null) {
+                        $results[$id] = $this->result($response, true, false, false);
                     } else {
                         $results[$id] = $this->result(null, false, false, true);
                     }
                     continue;
                 }
             }
-            $batch[$id] = $url;
-            if (count($batch) == $task->batchSize()) {
-                $batches[] = $batch;
-                $batch = [];
-            }
-        }
-        if (!empty($batch)) {
-            $batches[] = $batch;
-        }
 
-        foreach ($batches as $batch) {
-            $attempt = 0;
-            do {
+            $batch[] = $id;
+            if (count($batch) == $task->batchSize() || empty($queue)) {
                 $handles = [];
-                foreach ($batch as $id => $url) {
-                    $this->logger->debug('Sending request to {url}', ['url' => $url]);
+                foreach ($batch as $id) {
+                    $this->logger->debug('Sending request to {url}', ['url' => $urls[$id]]);
                     $handle = curl_init();
-                    curl_setopt($handle, CURLOPT_URL, $url);
+                    curl_setopt($handle, CURLOPT_URL, $urls[$id]);
                     curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
                     curl_multi_add_handle($multiHandle, $handle);
                     $handles[$id] = $handle;
+                    $attempts[$id]++;
                 }
+                $batch = [];
                 $running = null;
                 do {
                     curl_multi_exec($multiHandle, $running);
                 } while ($running > 0);
 
+                $responses = [];
                 foreach ($handles as $id => $handle) {
-                    $content = curl_multi_getcontent($handle);
+                    $response = curl_multi_getcontent($handle);
                     $valid = true;
                     foreach ($task->validators() as $validator) {
-                        if (!$validator($content)) {
+                        if (!$validator($response)) {
                             $valid = false;
                             break;
                         }
                     }
+                    $responses[$id] = $valid ? $response : null;
+                }
 
-                    if ($valid) {
+                foreach ($responses as $id => $response) {
+                    if ($response !== null) {
                         if ($task->cache()) {
                             $cacheKey = $task->cacheKeyPrefix() . $id;
                             $item = new CacheItem($cacheKey);
-                            $item->set($content);
+                            $item->set($response);
                             $item->expiresAfter($task->timeToLive());
                             $this->cache->save($item);
                         }
-                        $results[$id] = $this->result($content, true, false, false);
-                        unset($batch[$id]);
+                        $results[$id] = $this->result($response, true, false, false);
+                    } elseif ($attempts == $task->maxRetries()) {
+                        if ($task->cache()) {
+                            $cacheKey = $task->cacheKeyPrefix() . $id;
+                            $item = new CacheItem($cacheKey);
+                            $item->expiresAfter($task->throttle());
+                            $this->cache->save($item);
+                        }
+                        $this->result(null, false, true, false);
+                    } else {
+                        array_push($queue, $id);
                     }
-                    curl_multi_remove_handle($multiHandle, $handle);
-                }
-            } while ($attempt++ < $task->maxRetries() && !empty($batch));
-
-            foreach ($batch as $id => $_) {
-                $cacheKey = $task->cacheKeyPrefix() . $id;
-                $item = new CacheItem($cacheKey);
-                $item->expiresAfter($task->throttle());
-                $this->cache->save($item);
-                $results[$id] = $this->result(null, false, true, false);
+                };
             }
         }
         curl_multi_close($multiHandle);
         $endTime = microtime(true);
         $this->logger->debug('Fetched data from {count} URL(s) in {duration} sec.', [
-            'count' => count($task->items()),
+            'count' => $task->itemCount(),
             'duration' => trim(sprintf('%6.3f', $endTime - $startTime))
         ]);
         return $results;
