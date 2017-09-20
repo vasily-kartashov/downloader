@@ -1,0 +1,24 @@
+{
+  "name": "vasily-kartashov/downloader",
+  "type": "library",
+  "description": "Downloader Library",
+  "keywords": ["downloader"],
+  "authors": [
+    {
+      "name": "Vasily Kartashov",
+      "email": "vasily@kartashov.com"
+    }
+  ],
+  "require": {
+    "php": ">=7",
+    "ext-curl": "*",
+    "psr/cache": "1.*",
+    "psr/log": "1.*",
+    "cache/void-adapter": "1.*"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  }
+}
