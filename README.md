@@ -54,3 +54,4 @@ foreach ($results as $result) {
 - Keep only PSR dependencies
 - Expose CURL options
 - Push retries into next batch to fully use multi-handle
+- Add travis and packagist integration
