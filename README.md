@@ -1,6 +1,6 @@
 # PHP Downloader Library
 
-master: [![Build Status](https://travis-ci.org/vasily-kartashov/downloader.svg?branch=master)](https://travis-ci.org/vasily-kartashov/downloader)
+[![Build Status](https://travis-ci.org/vasily-kartashov/downloader.svg?branch=master)](https://travis-ci.org/vasily-kartashov/downloader)
 
 
 Try and download data from weather underground, and you'll know what this library is for.
