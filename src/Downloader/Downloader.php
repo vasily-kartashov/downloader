@@ -101,7 +101,7 @@ final class Downloader implements LoggerAwareInterface
                             $this->cache->save($item);
                         }
                         $results[$id] = $this->result($response, true, false, false);
-                    } elseif ($attempts == $task->maxRetries()) {
+                    } elseif ($attempts[$id] == $task->maxRetries()) {
                         if ($task->cache()) {
                             $cacheKey = $task->cacheKeyPrefix() . $id;
                             $item = new CacheItem($cacheKey);
