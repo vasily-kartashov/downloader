@@ -10,6 +10,11 @@ interface TaskBuilder
 
     public function retry(int $retries): TaskBuilder;
 
+    /**
+     * @param int|string $id
+     * @param string $url
+     * @return TaskBuilder
+     */
     public function add($id, string $url): TaskBuilder;
 
     public function validate(callable $validator): TaskBuilder;

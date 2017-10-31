@@ -3,17 +3,31 @@
 namespace Downloader;
 
 use ArrayIterator;
+use Exception;
 use InvalidArgumentException;
 use Iterator;
 
 final class Task
 {
+    /** @var int */
     private $batchSize;
+
+    /** @var int */
     private $maxRetries;
+
+    /** @var string|null */
     private $cacheKeyPrefix;
+
+    /** @var int|null */
     private $timeToLive;
+
+    /** @var string[] */
     private $items;
+
+    /** @var callable[] */
     private $validators;
+
+    /** @var int */
     private $throttle;
 
     private function __construct()
@@ -37,11 +51,17 @@ final class Task
 
     public function cacheKeyPrefix(): string
     {
+        if ($this->cacheKeyPrefix === null) {
+            throw new Exception('Cache parameters not set');
+        }
         return $this->cacheKeyPrefix;
     }
 
     public function timeToLive(): int
     {
+        if ($this->timeToLive === null) {
+            throw new Exception('Cache parameters not set');
+        }
         return $this->timeToLive;
     }
 
@@ -60,7 +80,10 @@ final class Task
         return $this->throttle;
     }
 
-    public function validators()
+    /**
+     * @return callable[]
+     */
+    public function validators(): array
     {
         return $this->validators;
     }
@@ -68,7 +91,19 @@ final class Task
     public static function builder(): TaskBuilder
     {
         $task = new Task();
-        $constructor = function (int $batchSize, int $maxRetries, $cacheKeyPrefix, $timeToLive, array $items, array $validators, int $throttle) use ($task) {
+
+        $constructor =
+        /**
+         * @param int $batchSize
+         * @param int $maxRetries
+         * @param string|null $cacheKeyPrefix
+         * @param int|null $timeToLive
+         * @param string[] $items
+         * @param callable[] $validators
+         * @param int $throttle
+         * @return Task
+         */
+        function (int $batchSize, int $maxRetries, $cacheKeyPrefix, $timeToLive, array $items, array $validators, int $throttle) use ($task): Task {
             $task->batchSize = $batchSize;
             $task->maxRetries = $maxRetries;
             $task->cacheKeyPrefix = $cacheKeyPrefix;
@@ -78,15 +113,31 @@ final class Task
             $task->throttle = $throttle;
             return $task;
         };
+
         return new class($constructor) implements TaskBuilder
         {
+            /** @var callable */
             private $constructor;
+
+            /** @var string|null */
             private $cacheKeyPrefix;
+
+            /** @var int|null */
             private $timeToLive;
+
+            /** @var int */
             private $batchSize = 1;
+
+            /** @var int */
             private $maxRetries = 1;
+
+            /** @var string[] */
             private $items = [];
+
+            /** @var callable[] */
             private $validators = [];
+
+            /** @var int */
             private $throttle = 0;
 
             public function __construct(callable $constructor)
@@ -132,6 +183,11 @@ final class Task
                 return $this;
             }
 
+            /**
+             * @param int|string $id
+             * @param string $url
+             * @return TaskBuilder
+             */
             public function add($id, string $url): TaskBuilder
             {
                 if (!is_scalar($id)) {

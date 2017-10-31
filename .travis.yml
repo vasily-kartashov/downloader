@@ -14,3 +14,4 @@ script:
   - ./vendor/bin/phpunit
   - ./vendor/bin/phpstan analyse --level 7 src
   - ./vendor/bin/phpcs --standard=PSR2 -n src
+  - ./vendor/bin/psalm
