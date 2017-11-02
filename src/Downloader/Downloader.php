@@ -30,7 +30,8 @@ final class Downloader implements LoggerAwareInterface
 
     /**
      * @param Task $task
-     * @return array
+     * @return Result[]
+     * @psalm-return array<mixed,Result>
      * @throws Exception
      */
     public function execute(Task $task): array
