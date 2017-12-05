@@ -23,6 +23,10 @@ final class Downloader implements LoggerAwareInterface
         $this->logger = new NullLogger();
     }
 
+    /**
+     * @param LoggerInterface $logger
+     * @return void
+     */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -33,6 +37,7 @@ final class Downloader implements LoggerAwareInterface
      * @return Result[]
      * @psalm-return array<mixed,Result>
      * @throws Exception
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function execute(Task $task): array
     {
