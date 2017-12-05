@@ -179,6 +179,10 @@ final class Downloader implements LoggerAwareInterface
                 $this->skipped = $skipped;
             }
 
+            /**
+             * @return string
+             * @throws Exception
+             */
             public function content(): string
             {
                 if ($this->content === null) {

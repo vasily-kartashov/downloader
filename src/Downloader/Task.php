@@ -49,6 +49,10 @@ final class Task
         return $this->cacheKeyPrefix != null;
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
     public function cacheKeyPrefix(): string
     {
         if ($this->cacheKeyPrefix === null) {
@@ -57,6 +61,10 @@ final class Task
         return $this->cacheKeyPrefix;
     }
 
+    /**
+     * @return int
+     * @throws Exception
+     */
     public function timeToLive(): int
     {
         if ($this->timeToLive === null) {
