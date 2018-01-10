@@ -162,6 +162,7 @@ final class Task
 
             public function build(): Task
             {
+                /** @psalm-suppress MixedReturnStatement */
                 return ($this->constructor)(
                     $this->batchSize,
                     $this->maxRetries,
