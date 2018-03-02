@@ -11,5 +11,6 @@
         <MixedAssignment errorLevel="suppress"/>
         <MixedInferredReturnType errorLevel="suppress"/>
         <PropertyNotSetInConstructor errorLevel="suppress"/>
+        <RedundantConditionGivenDocblockType errorLevel="suppress"/>
     </issueHandlers>
 </psalm>
