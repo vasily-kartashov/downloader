@@ -24,7 +24,10 @@ final class Task
     /** @var string[] */
     private $items;
 
-    /** @var callable[] */
+    /**
+     * @var callable[]
+     * @psalm-var array<int, callable(string): bool>
+     */
     private $validators;
 
     /** @var int */
@@ -90,6 +93,7 @@ final class Task
 
     /**
      * @return callable[]
+     * @psalm-return array<int, callable(string): bool>
      */
     public function validators(): array
     {
@@ -108,6 +112,7 @@ final class Task
          * @param int|null $timeToLive
          * @param string[] $items
          * @param callable[] $validators
+         * @psalm-param array<int, callable(string): bool> $validators
          * @param int $throttle
          * @return Task
          */
@@ -124,7 +129,10 @@ final class Task
 
         return new class($constructor) implements TaskBuilder
         {
-            /** @var callable */
+            /**
+             * @var callable
+             * @psalm-var callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task
+             */
             private $constructor;
 
             /** @var string|null */
@@ -142,12 +150,19 @@ final class Task
             /** @var string[] */
             private $items = [];
 
-            /** @var callable[] */
+            /**
+             * @var callable[]
+             * @psalm-var array<int, callable(string): bool>
+             */
             private $validators = [];
 
             /** @var int */
             private $throttle = 0;
 
+            /**
+             * @param callable $constructor
+             * @var-param callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task $constructor
+             */
             public function __construct(callable $constructor)
             {
                 $this->constructor = $constructor;
@@ -162,7 +177,6 @@ final class Task
 
             public function build(): Task
             {
-                /** @psalm-suppress MixedReturnStatement */
                 return ($this->constructor)(
                     $this->batchSize,
                     $this->maxRetries,
