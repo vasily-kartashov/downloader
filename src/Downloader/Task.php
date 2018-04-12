@@ -213,8 +213,8 @@ final class Task
              */
             public function add($id, string $url): TaskBuilder
             {
-                if (!is_scalar($id)) {
-                    throw new InvalidArgumentException('Download item ID must be atomic');
+                if (!is_int($id) && !is_string($id)) {
+                    throw new InvalidArgumentException('Download item ID must be an integer or a string');
                 }
                 $this->items[$id] = $url;
                 return $this;
