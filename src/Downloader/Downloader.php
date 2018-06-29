@@ -5,6 +5,7 @@ namespace Downloader;
 use Cache\Adapter\Common\CacheItem;
 use Exception;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -37,7 +38,7 @@ final class Downloader implements LoggerAwareInterface
      * @return Result[]
      * @psalm-return array<mixed,Result>
      * @throws Exception
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @psalm-suppress InvalidCatch
      */
     public function execute(Task $task): array
     {
@@ -46,7 +47,8 @@ final class Downloader implements LoggerAwareInterface
         if ($multiHandle === false) {
             throw new Exception('Cannot initialize CURL multi-handle');
         }
-        $startTime = (float) microtime(true);
+        /** @var float $startTime */
+        $startTime = microtime(true);
 
         $attempts = [];
         $queue = [];
@@ -63,7 +65,12 @@ final class Downloader implements LoggerAwareInterface
 
             if ($task->cache()) {
                 $cacheKey = $task->cacheKeyPrefix() . ((string) $id);
-                $item = $this->cache->getItem($cacheKey);
+                try {
+                    $item = $this->cache->getItem($cacheKey);
+                } catch (InvalidArgumentException $e) {
+                    throw new Exception($e->getMessage(), $e->getCode());
+                }
+
                 if ($item->isHit()) {
                     $response = $item->get();
                     if (is_string($response)) {
@@ -134,7 +141,8 @@ final class Downloader implements LoggerAwareInterface
             }
         }
         curl_multi_close($multiHandle);
-        $endTime = (float) microtime(true);
+        /** @var float $endTime */
+        $endTime = microtime(true);
         $this->logger->debug('Fetched data from {count} URL(s) in {duration} sec.', [
             'count' => $task->itemCount(),
             'duration' => trim(sprintf('%6.3f', $endTime - $startTime))
