@@ -6,8 +6,9 @@
         <directory name="src" />
     </projectFiles>
     <issueHandlers>
-        <MixedArrayOffset errorLevel="suppress"/>
+        <!--
         <MixedAssignment errorLevel="suppress"/>
+        -->
         <MixedInferredReturnType errorLevel="suppress"/>
         <PropertyNotSetInConstructor errorLevel="suppress"/>
         <RedundantConditionGivenDocblockType errorLevel="suppress"/>

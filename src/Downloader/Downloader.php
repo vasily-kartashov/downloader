@@ -53,7 +53,9 @@ final class Downloader implements LoggerAwareInterface
         $attempts = [];
         $queue = [];
         $urls = [];
+        /** @var string $url */
         foreach ($task->items() as $id => $url) {
+            /** @var int|string $id */
             $attempts[$id] = 0;
             $queue[] = $id;
             $urls[$id] = $url;
@@ -72,6 +74,7 @@ final class Downloader implements LoggerAwareInterface
                 }
 
                 if ($item->isHit()) {
+                    /** @var string|null $response */
                     $response = $item->get();
                     if (is_string($response)) {
                         $results[$id] = $this->result($response, true, false, false);

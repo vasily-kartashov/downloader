@@ -53,5 +53,5 @@ foreach ($results as $result) {
 
 ## ToDo
 
-- Expose CURL options
+- Embed Guzzle and use standards, keep this as a lean interface only
 - Add more tests
