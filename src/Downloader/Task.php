@@ -24,7 +24,10 @@ final class Task
     /** @var array<int,string> */
     private $items = [];
 
-    /** @var array<int, callable(string): bool> */
+    /**
+     * @var array<int,callable>
+     * @psalm-var array<int,callable(string): bool>
+     */
     private $validators = [];
 
     /** @var int */
@@ -93,7 +96,8 @@ final class Task
     }
 
     /**
-     * @return array<int, callable(string): bool>
+     * @return array<int,callable>
+     * @psalm-return array<int,callable(string):bool>
      */
     public function validators(): array
     {
@@ -146,14 +150,18 @@ final class Task
             /** @var string[] */
             private $items = [];
 
-            /** @var array<int, callable(string): bool> */
+            /**
+             * @var array<int,callable>
+             * @psalm-var array<int,callable(string):bool>
+             */
             private $validators = [];
 
             /** @var int */
             private $throttle = 0;
 
             /**
-             * @param callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task $constructor
+             * @param callable $constructor
+             * @psalm-param callable(int,int,string|null,int|null,array<mixed,string>,array<int,callable(string):bool>,int):Task $constructor
              */
             public function __construct(callable $constructor)
             {
