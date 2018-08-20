@@ -93,8 +93,7 @@ final class Task
     }
 
     /**
-     * @return callable[]
-     * @psalm-return array<int, callable(string): bool>
+     * @return array<int, callable(string): bool>
      */
     public function validators(): array
     {
@@ -112,8 +111,7 @@ final class Task
          * @param string|null $cacheKeyPrefix
          * @param int|null $timeToLive
          * @param array<int,string> $items
-         * @param callable[] $validators
-         * @psalm-param array<int, callable(string): bool> $validators
+         * @param array<int, callable(string): bool> $validators
          * @param int $throttle
          * @return Task
          */
@@ -130,10 +128,7 @@ final class Task
 
         return new class($constructor) implements TaskBuilder
         {
-            /**
-             * @var callable
-             * @psalm-var callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task
-             */
+            /** @var callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task */
             private $constructor;
 
             /** @var string|null */
@@ -151,10 +146,7 @@ final class Task
             /** @var string[] */
             private $items = [];
 
-            /**
-             * @var callable[]
-             * @psalm-var array<int, callable(string): bool>
-             */
+            /** @var array<int, callable(string): bool> */
             private $validators = [];
 
             /** @var int */

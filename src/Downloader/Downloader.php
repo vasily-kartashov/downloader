@@ -35,8 +35,7 @@ final class Downloader implements LoggerAwareInterface
 
     /**
      * @param Task $task
-     * @return Result[]
-     * @psalm-return array<mixed,Result>
+     * @return array<int|string,Result>
      * @throws Exception
      * @psalm-suppress InvalidCatch
      */
