@@ -115,7 +115,8 @@ final class Task
          * @param string|null $cacheKeyPrefix
          * @param int|null $timeToLive
          * @param array<int,string> $items
-         * @param array<int, callable(string): bool> $validators
+         * @param array<int,callable> $validators
+         * @psalm-param array<int,callable(string):bool> $validators
          * @param int $throttle
          * @return Task
          */
