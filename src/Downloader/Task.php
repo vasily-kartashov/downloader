@@ -10,28 +10,25 @@ use Iterator;
 final class Task
 {
     /** @var int */
-    private $batchSize;
+    private $batchSize = 0;
 
     /** @var int */
-    private $maxRetries;
+    private $maxRetries = 0;
 
     /** @var string|null */
-    private $cacheKeyPrefix;
+    private $cacheKeyPrefix = null;
 
     /** @var int|null */
-    private $timeToLive;
+    private $timeToLive = null;
 
-    /** @var string[] */
-    private $items;
+    /** @var array<int,string> */
+    private $items = [];
 
-    /**
-     * @var callable[]
-     * @psalm-var array<int, callable(string): bool>
-     */
-    private $validators;
+    /** @var array<int, callable(string): bool> */
+    private $validators = [];
 
     /** @var int */
-    private $throttle;
+    private $throttle = 0;
 
     private function __construct()
     {
@@ -76,6 +73,10 @@ final class Task
         return $this->timeToLive;
     }
 
+    /**
+     * @return Iterator
+     * @psalm-return Iterator<int,string>
+     */
     public function items(): Iterator
     {
         return new ArrayIterator($this->items);
@@ -110,7 +111,7 @@ final class Task
          * @param int $maxRetries
          * @param string|null $cacheKeyPrefix
          * @param int|null $timeToLive
-         * @param string[] $items
+         * @param array<int,string> $items
          * @param callable[] $validators
          * @psalm-param array<int, callable(string): bool> $validators
          * @param int $throttle
@@ -160,8 +161,7 @@ final class Task
             private $throttle = 0;
 
             /**
-             * @param callable $constructor
-             * @var-param callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task $constructor
+             * @param callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task $constructor
              */
             public function __construct(callable $constructor)
             {
@@ -213,9 +213,7 @@ final class Task
              */
             public function add($id, string $url): TaskBuilder
             {
-                if (!is_int($id) && !is_string($id)) {
-                    throw new InvalidArgumentException('Download item ID must be an integer or a string');
-                }
+                assert(is_int($id) || is_string($id));
                 $this->items[$id] = $url;
                 return $this;
             }
