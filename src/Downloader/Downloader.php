@@ -110,7 +110,7 @@ final class Downloader implements LoggerAwareInterface
                     $response = curl_multi_getcontent($handle);
                     $valid = true;
                     foreach ($task->validators() as $validator) {
-                        if (!$validator($response)) {
+                        if (!$validator($response, $id, $urls[$id])) {
                             $valid = false;
                             break;
                         }
