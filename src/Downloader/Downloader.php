@@ -100,7 +100,7 @@ final class Downloader implements LoggerAwareInterface
                     $attempts[$id]++;
                 }
                 $batch = [];
-                $running = null;
+                $running = 0;
                 do {
                     curl_multi_exec($multiHandle, $running);
                 } while ($running > 0);

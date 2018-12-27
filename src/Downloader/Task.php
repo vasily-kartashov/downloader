@@ -26,7 +26,7 @@ final class Task
 
     /**
      * @var array<int,callable>
-     * @psalm-var array<int,callable(string): bool>
+     * @psalm-var array<int,callable(string,int|string,string): bool>
      */
     private $validators = [];
 
@@ -97,7 +97,7 @@ final class Task
 
     /**
      * @return array<int,callable>
-     * @psalm-return array<int,callable(string):bool>
+     * @psalm-return array<int,callable(string,int|string,string):bool>
      */
     public function validators(): array
     {
@@ -153,7 +153,7 @@ final class Task
 
             /**
              * @var array<int,callable>
-             * @psalm-var array<int,callable(string):bool>
+             * @psalm-var array<int,callable(string,int|string,string):bool>
              */
             private $validators = [];
 
