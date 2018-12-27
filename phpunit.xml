@@ -1,7 +1,10 @@
-<phpunit bootstrap="vendor/autoload.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite>
-            <directory>test</directory>
+        <testsuite name="hamlet-framework/db">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>
