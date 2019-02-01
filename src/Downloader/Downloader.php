@@ -35,7 +35,7 @@ final class Downloader implements LoggerAwareInterface
 
     /**
      * @param Task $task
-     * @return array<int|string,Result>
+     * @return array<array-key,Result>
      * @throws Exception
      * @psalm-suppress InvalidCatch
      */
@@ -46,15 +46,12 @@ final class Downloader implements LoggerAwareInterface
         if ($multiHandle === false) {
             throw new Exception('Cannot initialize CURL multi-handle');
         }
-        /** @var float $startTime */
         $startTime = microtime(true);
 
         $attempts = [];
         $queue = [];
         $urls = [];
-        /** @var string $url */
         foreach ($task->items() as $id => $url) {
-            /** @var int|string $id */
             $attempts[$id] = 0;
             $queue[] = $id;
             $urls[$id] = $url;
@@ -143,7 +140,6 @@ final class Downloader implements LoggerAwareInterface
             }
         }
         curl_multi_close($multiHandle);
-        /** @var float $endTime */
         $endTime = microtime(true);
         $this->logger->debug('Fetched data from {count} URL(s) in {duration} sec.', [
             'count' => $task->itemCount(),

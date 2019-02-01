@@ -18,9 +18,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "@stable",
-    "phpstan/phpstan": "@stable",
-    "squizlabs/php_codesniffer": "@stable",
-    "vimeo/psalm": "@stable"
+    "vimeo/psalm": "@stable",
+    "squizlabs/php_codesniffer": "@stable"
   },
   "autoload": {
     "classmap": [

@@ -3,9 +3,9 @@
 namespace Downloader;
 
 use ArrayIterator;
-use Exception;
 use InvalidArgumentException;
 use Iterator;
+use RuntimeException;
 
 final class Task
 {
@@ -21,13 +21,10 @@ final class Task
     /** @var int|null */
     private $timeToLive = null;
 
-    /** @var array<int,string> */
+    /** @var array<array-key,string> */
     private $items = [];
 
-    /**
-     * @var array<int,callable>
-     * @psalm-var array<int,callable(string,int|string,string): bool>
-     */
+    /** @var array<callable(string,array-key,string):bool> */
     private $validators = [];
 
     /** @var int */
@@ -52,33 +49,24 @@ final class Task
         return $this->cacheKeyPrefix != null;
     }
 
-    /**
-     * @return string
-     * @throws Exception
-     */
     public function cacheKeyPrefix(): string
     {
         if ($this->cacheKeyPrefix === null) {
-            throw new Exception('Cache parameters not set');
+            throw new RuntimeException('Cache parameters not set');
         }
         return $this->cacheKeyPrefix;
     }
 
-    /**
-     * @return int
-     * @throws Exception
-     */
     public function timeToLive(): int
     {
         if ($this->timeToLive === null) {
-            throw new Exception('Cache parameters not set');
+            throw new RuntimeException('Cache parameters not set');
         }
         return $this->timeToLive;
     }
 
     /**
-     * @return Iterator
-     * @psalm-return Iterator<int,string>
+     * @return Iterator<array-key,string>
      */
     public function items(): Iterator
     {
@@ -96,8 +84,7 @@ final class Task
     }
 
     /**
-     * @return array<int,callable>
-     * @psalm-return array<int,callable(string,int|string,string):bool>
+     * @return array<callable(string,array-key,string):bool>
      */
     public function validators(): array
     {
@@ -110,14 +97,13 @@ final class Task
 
         $constructor =
         /**
-         * @param int $batchSize
-         * @param int $maxRetries
-         * @param string|null $cacheKeyPrefix
-         * @param int|null $timeToLive
-         * @param array<int,string> $items
-         * @param array<int,callable> $validators
-         * @psalm-param array<int,callable(string):bool> $validators
-         * @param int $throttle
+         * @param int                                           $batchSize
+         * @param int                                           $maxRetries
+         * @param string|null                                   $cacheKeyPrefix
+         * @param int|null                                      $timeToLive
+         * @param array<array-key,string>                       $items
+         * @param array<callable(string,array-key,string):bool> $validators
+         * @param int                                           $throttle
          * @return Task
          */
         function (int $batchSize, int $maxRetries, $cacheKeyPrefix, $timeToLive, array $items, array $validators, int $throttle) use ($task): Task {
@@ -133,7 +119,7 @@ final class Task
 
         return new class($constructor) implements TaskBuilder
         {
-            /** @var callable(int, int, string|null, int|null, array<mixed,string>, array<int, callable(string): bool>, int) : Task */
+            /** @var callable(int,int,string|null,int|null,array<array-key,string>,array<callable(string,array-key,string):bool>,int):Task */
             private $constructor;
 
             /** @var string|null */
@@ -151,18 +137,14 @@ final class Task
             /** @var string[] */
             private $items = [];
 
-            /**
-             * @var array<int,callable>
-             * @psalm-var array<int,callable(string,int|string,string):bool>
-             */
+            /** @var array<int,callable(string,int|string,string):bool> */
             private $validators = [];
 
             /** @var int */
             private $throttle = 0;
 
             /**
-             * @param callable $constructor
-             * @psalm-param callable(int,int,string|null,int|null,array<mixed,string>,array<int,callable(string):bool>,int):Task $constructor
+             * @param callable(int,int,string|null,int|null,array<array-key,string>,array<callable(string,array-key,string):bool>,int):Task $constructor
              */
             public function __construct(callable $constructor)
             {
@@ -208,7 +190,7 @@ final class Task
             }
 
             /**
-             * @param int|string $id
+             * @param array-key $id
              * @param string $url
              * @return TaskBuilder
              */
