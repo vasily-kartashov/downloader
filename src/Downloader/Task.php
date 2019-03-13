@@ -193,6 +193,7 @@ final class Task
              * @param array-key $id
              * @param string $url
              * @return TaskBuilder
+             * @psalm-suppress RedundantConditionGivenDocblockType
              */
             public function add($id, string $url): TaskBuilder
             {
