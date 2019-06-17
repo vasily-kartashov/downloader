@@ -3,11 +3,15 @@
 namespace Downloader;
 
 use Cache\Adapter\Void\VoidCachePool;
+use Exception;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 class DownloaderTest extends TestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testSimpleDownload()
     {
         $cache = new VoidCachePool();
