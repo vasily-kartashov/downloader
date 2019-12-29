@@ -202,6 +202,11 @@ final class Task
                 return $this;
             }
 
+            /**
+             * @param callable $validator
+             * @psalm-param callable(string,array-key,string):bool $validator
+             * @return TaskBuilder
+             */
             public function validate(callable $validator): TaskBuilder
             {
                 $this->validators[] = $validator;

@@ -31,7 +31,8 @@ interface TaskBuilder
     public function add($id, string $url): TaskBuilder;
 
     /**
-     * @param callable(string,array-key,string) $validator
+     * @param callable $validator
+     * @psalm-param callable(string,array-key,string):bool $validator
      * @return TaskBuilder
      */
     public function validate(callable $validator): TaskBuilder;
