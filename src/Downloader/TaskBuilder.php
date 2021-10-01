@@ -18,10 +18,10 @@ interface TaskBuilder
     public function batch(int $size): TaskBuilder;
 
     /**
-     * @param int $retries
+     * @param int $maxRetries
      * @return TaskBuilder
      */
-    public function retry(int $retries): TaskBuilder;
+    public function retry(int $maxRetries): TaskBuilder;
 
     /**
      * @param int|string $id
@@ -31,8 +31,7 @@ interface TaskBuilder
     public function add($id, string $url): TaskBuilder;
 
     /**
-     * @param callable $validator
-     * @psalm-param callable(string,array-key,string):bool $validator
+     * @param callable(string,array-key,string):bool $validator
      * @return TaskBuilder
      */
     public function validate(callable $validator): TaskBuilder;
@@ -42,6 +41,12 @@ interface TaskBuilder
      * @return TaskBuilder
      */
     public function throttle(int $pause): TaskBuilder;
+
+    /**
+     * @param array<int,scalar> $options
+     * @return TaskBuilder
+     */
+    public function options(array $options): TaskBuilder;
 
     /**
      * @return Task

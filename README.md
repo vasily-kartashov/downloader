@@ -1,9 +1,10 @@
 # PHP Downloader Library
 
-[![Build Status](https://travis-ci.org/vasily-kartashov/downloader.svg?branch=master)](https://travis-ci.org/vasily-kartashov/downloader)
-
-
-Try and download data from weather underground, and you'll know what this library is for.
+![CI Status](https://github.com/vasily-kartashov/downloader/CI/badge.svg?branch=master&event=push)
+[![Packagist](https://img.shields.io/packagist/v/vasily-kartashov/downloader.svg)](https://packagist.org/packages/hamlet-framework/json-mapper)
+[![Packagist](https://img.shields.io/packagist/dt/vasily-kartashov/downloader.svg)](https://packagist.org/packages/hamlet-framework/json-mapper)
+[![Coverage Status](https://coveralls.io/repos/github/vasily-kartashov/downloader/badge.svg?branch=master)](https://coveralls.io/github/hamlet-framework/json-mapper?branch=master)
+![Psalm coverage](https://shepherd.dev/github/vasily-kartashov/downloader/coverage.svg?)
 
 ## Example
 
@@ -23,6 +24,9 @@ $task = Task::builder()
         return strlen($response) > 1024;
     })
     ->cache('pages.', 12 * 3600)
+    ->options([
+        CURLOPT_SSL_VERIFYHOST => false
+    ])
     ->throttle(120)
     ->add(1, 'http://example/page/1')
     ->add(2, 'http://example/page/2')

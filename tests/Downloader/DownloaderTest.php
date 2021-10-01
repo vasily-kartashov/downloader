@@ -22,9 +22,13 @@ class DownloaderTest extends TestCase
         $builder = Task::builder()
             ->batch(12)
             ->retry(2)
+            ->options([
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+            ])
             ->throttle(30);
         for ($i = 0; $i < $count; $i++) {
-            $builder->add($i, 'http://example.com');
+            $builder->add($i, 'https://example.com');
         }
 
         $results = $downloader->execute($builder->build());

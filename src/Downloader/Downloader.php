@@ -12,10 +12,14 @@ use Psr\Log\NullLogger;
 
 final class Downloader implements LoggerAwareInterface
 {
-    /** @var CacheItemPoolInterface */
+    /**
+     * @var CacheItemPoolInterface
+     */
     private $cache;
 
-    /** @var LoggerInterface  */
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     public function __construct(CacheItemPoolInterface $cache)
@@ -93,6 +97,7 @@ final class Downloader implements LoggerAwareInterface
                     }
                     curl_setopt($handle, CURLOPT_URL, $urls[$id]);
                     curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt_array($handle, $task->options());
                     curl_multi_add_handle($multiHandle, $handle);
                     $handles[$id] = $handle;
                     $attempts[$id]++;

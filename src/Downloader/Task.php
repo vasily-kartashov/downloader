@@ -9,25 +9,44 @@ use RuntimeException;
 
 final class Task
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     private $batchSize = 0;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $maxRetries = 0;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $cacheKeyPrefix = null;
 
-    /** @var int|null */
+    /**
+     * @var int|null
+     */
     private $timeToLive = null;
 
-    /** @var array<array-key,string> */
+    /**
+     * @var array<array-key,string>
+     */
     private $items = [];
 
-    /** @var array<callable(string,array-key,string):bool> */
+    /**
+     * @var array<int,scalar>
+     */
+    private $options = [];
+
+    /**
+     * @var array<callable(string,array-key,string):bool>
+     */
     private $validators = [];
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $throttle = 0;
 
     private function __construct()
@@ -84,6 +103,14 @@ final class Task
     }
 
     /**
+     * @return array<int,scalar>
+     */
+    public function options(): array
+    {
+        return $this->options;
+    }
+
+    /**
      * @return array<callable(string,array-key,string):bool>
      */
     public function validators(): array
@@ -102,16 +129,18 @@ final class Task
          * @param string|null                                   $cacheKeyPrefix
          * @param int|null                                      $timeToLive
          * @param array<array-key,string>                       $items
+         * @param array<int,scalar>                             $options
          * @param array<callable(string,array-key,string):bool> $validators
          * @param int                                           $throttle
          * @return Task
          */
-        function (int $batchSize, int $maxRetries, $cacheKeyPrefix, $timeToLive, array $items, array $validators, int $throttle) use ($task): Task {
+        function (int $batchSize, int $maxRetries, $cacheKeyPrefix, $timeToLive, array $items, array $options, array $validators, int $throttle) use ($task): Task {
             $task->batchSize = $batchSize;
             $task->maxRetries = $maxRetries;
             $task->cacheKeyPrefix = $cacheKeyPrefix;
             $task->timeToLive = $timeToLive;
             $task->items = $items;
+            $task->options = $options;
             $task->validators = $validators;
             $task->throttle = $throttle;
             return $task;
@@ -119,32 +148,53 @@ final class Task
 
         return new class($constructor) implements TaskBuilder
         {
-            /** @var callable(int,int,string|null,int|null,array<array-key,string>,array<callable(string,array-key,string):bool>,int):Task */
+            /**
+             * @var callable(int,int,string|null,int|null,array<array-key,string>,array<int,scalar>,array<callable(string,array-key,string):bool>,int):Task
+             */
             private $constructor;
 
-            /** @var string|null */
+            /**
+             * @var string|null
+             */
             private $cacheKeyPrefix;
 
-            /** @var int|null */
+            /**
+             * @var int|null
+             */
             private $timeToLive;
 
-            /** @var int */
+            /**
+             * @var int
+             */
             private $batchSize = 1;
 
-            /** @var int */
+            /**
+             * @var int
+             */
             private $maxRetries = 1;
 
-            /** @var string[] */
+            /**
+             * @var string[]
+             */
             private $items = [];
 
-            /** @var array<int,callable(string,int|string,string):bool> */
+            /**
+             * @var array<int,scalar>
+             */
+            private $options = [];
+
+            /**
+             * @var array<int,callable(string,int|string,string):bool>
+             */
             private $validators = [];
 
-            /** @var int */
+            /**
+             * @var int
+             */
             private $throttle = 0;
 
             /**
-             * @param callable(int,int,string|null,int|null,array<array-key,string>,array<callable(string,array-key,string):bool>,int):Task $constructor
+             * @param callable(int,int,string|null,int|null,array<array-key,string>,array<int,scalar>,array<callable(string,array-key,string):bool>,int):Task $constructor
              */
             public function __construct(callable $constructor)
             {
@@ -166,6 +216,7 @@ final class Task
                     $this->cacheKeyPrefix,
                     $this->timeToLive,
                     $this->items,
+                    $this->options,
                     $this->validators,
                     $this->throttle
                 );
@@ -202,9 +253,14 @@ final class Task
                 return $this;
             }
 
+            public function options(array $options): TaskBuilder
+            {
+                $this->options = $options;
+                return $this;
+            }
+
             /**
-             * @param callable $validator
-             * @psalm-param callable(string,array-key,string):bool $validator
+             * @param callable(string,array-key,string):bool $validator
              * @return TaskBuilder
              */
             public function validate(callable $validator): TaskBuilder
