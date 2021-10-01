@@ -1,6 +1,6 @@
 # PHP Downloader Library
 
-![CI Status](https://github.com/vasily-kartashov/downloader/CI/badge.svg?branch=master&event=push)
+![CI Status](https://github.com/vasily-kartashov/downloader/workflows/CI/badge.svg?branch=master&event=push)
 [![Packagist](https://img.shields.io/packagist/v/vasily-kartashov/downloader.svg)](https://packagist.org/packages/vasily-kartashov/downloader)
 [![Packagist](https://img.shields.io/packagist/dt/vasily-kartashov/downloader.svg)](https://packagist.org/packages/vasily-kartashov/downloader)
 [![Coverage Status](https://coveralls.io/repos/github/vasily-kartashov/downloader/badge.svg?branch=master)](https://coveralls.io/github/vasily-kartashov/downloader?branch=master)
